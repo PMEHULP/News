@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live News App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f9d3;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .news-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      padding: 15px;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: scale(1.03);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+    .card h3 {
+      font-size: 18px;
+      color: #333;
+      margin: 10px 0;
+    }
+    .card p {
+      font-size: 14px;
+      color: #555;
+    }
+    .card a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📰 Live News (India)</h1>
+  <div id="news" class="news-container"></div>
+
+  <script>
+    const apiKey = "72600630651646beb5dd6f7f771fb161";
+    const url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`;
+
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+     .then(data => {
+  console.log(data); // Add this line
+  const newsContainer = document.getElementById("news");
+  newsContainer.innerHTML = "";
+
+  if (!data.articles || data.articles.length === 0) {
+    newsContainer.innerHTML = "<p style='text-align:center;'>No news found.</p>";
+    return;
+  }
+
+  data.articles.forEach(article => {
+    if (!article.urlToImage) return; // Skip if image missing
+
+    const card = document.createElement("div");
+    card.classList.add("card");
+
+    card.innerHTML = `
+      <img src="${article.urlToImage}" alt="News Image">
+      <h3>${article.title}</h3>
+      <p>${article.description || "No description available."}</p>
+      <a href="${article.url}" target="_blank">Read Full Article</a>
+    `;
+
+    newsContainer.appendChild(card);
+  });
+})
+      .catch(error => {
+        console.error("Error fetching news:", error);
+        document.getElementById("news").innerHTML =
+          "<p style='color:red;text-align:center;'>Failed to load news. Please try again later.</p>";
+      });
+  </script>
+
+</body>
+</html>
